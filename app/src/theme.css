@@ -257,7 +257,8 @@ h2 { font-size: 19px; }
   box-shadow: inset 0 1px 0 rgba(255,255,255,.4), var(--shadow-md); animation: you-pulse 2s ease-in-out infinite; }
 
 /* players strip */
-.players-strip { display: flex; gap: 8px; overflow-x: auto; padding: 8px 14px 4px; scrollbar-width: none; position: relative; z-index: 3; }
+.players-strip { display: flex; gap: 8px; overflow-x: auto; padding: 8px 20px 6px 14px; scrollbar-width: none; position: relative; z-index: 3;
+  -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); }
 .players-strip::-webkit-scrollbar { display: none; }
 .pchip { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 7px 12px 7px 8px; border-radius: 15px;
   background: linear-gradient(180deg, rgba(12,40,28,.72), rgba(8,28,20,.66)); box-shadow: inset 0 1px 0 rgba(190,240,215,.1), 0 3px 8px rgba(0,0,0,.28);
@@ -266,9 +267,9 @@ h2 { font-size: 19px; }
 .pchip.out { opacity: .4; filter: grayscale(.6); }
 .pchip .dot { width: 27px; height: 27px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; color: #fff; font-weight: 900;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 -3px 5px rgba(0,0,0,.25); }
-.pchip .pcol { min-width: 0; }
-.pchip .pn { font-size: 12px; font-weight: 900; color: #eafff2; max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.05; }
-.pchip .pc { font-size: 12px; font-weight: 900; color: var(--gold); line-height: 1.2; }
+.pchip .pcol { min-width: 0; display: flex; flex-direction: column; }
+.pchip .pn { font-size: 12px; font-weight: 900; color: #eafff2; max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.15; }
+.pchip .pc { font-size: 12.5px; font-weight: 900; color: var(--gold); line-height: 1.2; }
 
 /* board */
 .board-wrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 6px 10px; position: relative; z-index: 2; }
@@ -282,7 +283,8 @@ h2 { font-size: 19px; }
   box-shadow: inset 0 2px 0 rgba(255,255,255,.9), inset 0 -4px 7px rgba(120,90,40,.25), 0 6px 12px rgba(0,0,0,.35);
   display: grid; grid-template-columns: repeat(3,1fr); grid-template-rows: repeat(3,1fr); padding: 6px; }
 .die.rolling { animation: die-roll .5s cubic-bezier(.3,.7,.3,1); }
-.die i { width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #6a4a24, #3a2711); align-self: center; justify-self: center; }
+.die span { display: grid; place-items: center; }
+.die i { display: block; width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #6a4a24, #3a2711); box-shadow: inset 0 -1px 1px rgba(0,0,0,.4); }
 @keyframes die-roll { 0% { transform: rotate(-24deg) scale(.8); } 50% { transform: rotate(16deg) scale(1.12); } 100% { transform: none; } }
 
 /* action bar */

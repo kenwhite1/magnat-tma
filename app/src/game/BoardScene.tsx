@@ -79,22 +79,31 @@ export function BoardScene({ view, onTapTile }: { view: GameView; onTapTile: (id
         <TileCell key={tile.id} tile={tile} view={view} onTap={onTapTile} />
       ))}
 
-      {/* токены игроков */}
+      {/* токены игроков: смещены к внутреннему краю клетки, чтобы не закрывать подпись */}
       {[...byTile.entries()].map(([pos, plist]) => {
         const r = rectFor(pos)
-        const { cx, cy } = tokenCenter(r)
+        const c = tokenCenter(r)
+        const dxc = 500 - c.cx
+        const dyc = 500 - c.cy
+        const len = Math.hypot(dxc, dyc) || 1
+        const ux = dxc / len
+        const uy = dyc / len
+        const baseX = c.cx + ux * 30 // сдвиг внутрь, на цветную полосу
+        const baseY = c.cy + uy * 30
+        const px = -uy // перпендикуляр для раскладки нескольких фишек вдоль клетки
+        const py = ux
         return plist.map((p, idx) => {
           const n = plist.length
-          const off = 26
-          const dx = n === 1 ? 0 : (idx % 2 === 0 ? -off : off)
-          const dy = n <= 2 ? 0 : (idx < 2 ? -off : off)
+          const spread = (idx - (n - 1) / 2) * 25
+          const gx = baseX + px * spread
+          const gy = baseY + py * spread
           const active = p.id === curId
           return (
-            <g key={p.id} className="token" transform={`translate(${cx + dx} ${cy + dy})`}>
-              <circle r="30" fill="rgba(0,0,0,.28)" cx="0" cy="4" />
-              <circle r="27" fill={p.color} stroke="#fff" strokeWidth="4" />
-              {active && <circle r="34" fill="none" stroke="#f8d77e" strokeWidth="5" opacity="0.9" />}
-              <text x="0" y="9" textAnchor="middle" fontSize="26" fontWeight="900" fill="#fff"
+            <g key={p.id} className="token" transform={`translate(${gx} ${gy})`}>
+              <circle r="23" fill="rgba(0,0,0,.32)" cx="0" cy="4" />
+              <circle r="20.5" fill={p.color} stroke="#fff" strokeWidth="3.5" />
+              {active && <circle r="26" fill="none" stroke="#f8d77e" strokeWidth="4.5" opacity="0.95" />}
+              <text x="0" y="7" textAnchor="middle" fontSize="21" fontWeight="900" fill="#fff"
                 fontFamily="Nunito, sans-serif">{p.name.slice(0, 1).toUpperCase()}</text>
             </g>
           )

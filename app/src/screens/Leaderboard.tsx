@@ -24,7 +24,12 @@ export function Leaderboard() {
 
       <div className="board">
         {rows.length === 0 ? (
-          <p className="act-hint" style={{ textAlign: 'center', marginTop: 20, color: 'var(--ink-soft)' }}>Пока никто не играл. Будь первым в таблице!</p>
+          <div className="code-card" style={{ textAlign: 'center', marginTop: 8 }}>
+            <div style={{ fontSize: 52 }}>🎩</div>
+            <h2 style={{ color: 'var(--ink)', marginTop: 6 }}>Таблица пока пуста</h2>
+            <p style={{ color: 'var(--ink-soft)', fontWeight: 800, marginTop: 6 }}>Сыграй партию и стань первым магнатом в рейтинге!</p>
+            <button className="btn gold block" style={{ marginTop: 14 }} onClick={() => { useStore.getState().go('home'); useStore.setState({ difficultyPick: true }) }}>Сыграть 🎲</button>
+          </div>
         ) : (
           rows.map((r, i) => (
             <div className="board-row" key={i}>
