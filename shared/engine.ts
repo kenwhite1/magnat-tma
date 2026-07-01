@@ -296,6 +296,8 @@ export function applyAction(prev: GameState, action: Action): ActionResult {
         settle(s, cur, JAIL_FINE, null, events)
         logLine(s, `${cur.name} платит залог ${money(JAIL_FINE)} и выходит`)
       }
+      // залог мог разорить игрока: тогда завершаем ход через общий выход
+      if (cur.bankrupt) { concludeTurn(s, events); return { state: s, events } }
       cur.inJail = false
       cur.jailTurns = 0
       events.push({ kind: 'freed', playerId: cur.id })
@@ -325,6 +327,8 @@ export function applyAction(prev: GameState, action: Action): ActionResult {
         if (cur.jailTurns >= 3) {
           if (cur.getOut > 0) cur.getOut--
           else settle(s, cur, JAIL_FINE, null, events)
+          // обязательный залог мог разорить: завершаем ход, не двигая банкрота
+          if (cur.bankrupt) { concludeTurn(s, events); return { state: s, events } }
           cur.inJail = false
           cur.jailTurns = 0
           events.push({ kind: 'freed', playerId: cur.id })

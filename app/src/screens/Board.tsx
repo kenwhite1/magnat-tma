@@ -101,7 +101,8 @@ export function Board() {
         <div className="act-row">
           {view.yourTurn && view.youInJail ? (
             <>
-              <button className="btn gold" style={{ flex: 1 }} onClick={jailPay}>
+              <button className="btn gold" style={{ flex: 1 }} onClick={jailPay}
+                disabled={!me || (me.getOut === 0 && me.cash < JAIL_FINE)}>
                 {me && me.getOut > 0 ? 'Выйти по карте' : `Залог ${money(JAIL_FINE)}`}
               </button>
               <button className="btn dark" style={{ flex: 1 }} onClick={jailRoll}>Бросок на дубль 🎲</button>
