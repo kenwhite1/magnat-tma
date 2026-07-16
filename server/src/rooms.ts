@@ -12,7 +12,22 @@ import { createGame, applyAction, currentPlayer, finalScore, type GameState, typ
 import { botDecide, type Difficulty } from '../../shared/bots'
 import { toView } from '../../shared/view'
 import type { RoomStateDto, RoomDto } from '../../shared/types'
+import { ownsGroup } from '../../shared/engine'
+import { GROUPS, groupTiles, MAX_HOUSES, type Group } from '../../shared/board'
 import { recordResult } from './profiles'
+import { reportMatch } from './gg'
+import type { MatchMode } from '../../shared/gg'
+
+// «Монополист»: победитель держит полный цветной набор, застроенный отелями.
+// Вокзалы и предприятия не считаем — на них не строят (houseCost 0).
+function hasHotelMonopoly(g: GameState, playerId: string): boolean {
+  return (Object.keys(GROUPS) as Group[]).some(
+    grp =>
+      GROUPS[grp].houseCost > 0 &&
+      ownsGroup(g, playerId, grp) &&
+      groupTiles(grp).every(id => (g.houses[id] ?? 0) >= MAX_HOUSES),
+  )
+}
 
 interface Seat {
   id: string // id в движке: 'u<tgid>' для людей, 'bot1'... для ботов
@@ -248,10 +263,32 @@ function finishIfDone(room: Room): void {
   const winner = room.game.players.find(p => p.id === room.game!.winnerId)
   const score = finalScore(room.game)
   room.roundOver = { winnerName: winner?.name ?? '-', score }
+  const g = room.game
+  // Живые — только настоящие люди: в быстрой комнате боты замаскированы под них
+  // для UI, но хабу нужно честное число (соц./ранговые ачивки, анти-чит).
+  const humans = room.seats.filter(h => !h.isBot && h.tgId != null)
+  const mode: MatchMode = room.quick ? 'multi' : 'friends'
   for (const s of room.seats) {
     if (s.isBot || s.tgId == null) continue
-    const won = room.game.winnerId === s.id
+    const won = g.winnerId === s.id
     recordResult(s.tgId, 'online', won, won ? score : 0)
+    // Рапорт хабу: room.scored выше гарантирует один раз на партию, а ключ
+    // идемпотентности (код + время создания комнаты) — что повтор не доплатит.
+    // «Без потерь» не шлём: фигур, которые можно потерять, в «Магнате» нет.
+    const stats: Record<string, boolean> = {}
+    if (won && g.turnCount < 25) stats.fast = true
+    if (won && hasHotelMonopoly(g, s.id)) stats.signature = true
+    reportMatch({
+      userId: s.tgId,
+      idempotencyKey: `magnat-${room.code}-${room.createdAt}-${s.tgId}`,
+      won,
+      players: room.seats.length,
+      humanPlayers: humans.length,
+      score: won ? score : 0,
+      mode,
+      opponents: humans.filter(h => h.tgId !== s.tgId).map(h => h.tgId as number),
+      stats: Object.keys(stats).length ? stats : undefined,
+    })
   }
 }
 
