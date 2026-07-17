@@ -1,4 +1,5 @@
 import { useStore } from '../store'
+import { t } from '../i18n'
 
 const RULES: { emoji: string; t: string; b: string }[] = [
   { emoji: '🎲', t: 'Бросай и ходи', b: 'В свой ход бросай два кубика и двигайся по кругу. Выпал дубль, ходишь ещё раз.' },
@@ -16,14 +17,14 @@ export function Rules() {
     <div className="page rise">
       <div className="page-head">
         <button className="round-btn" onClick={() => go('home')}>‹</button>
-        <h1>Правила</h1>
+        <h1>{t('Правила')}</h1>
       </div>
 
       <div className="rule" style={{ background: 'linear-gradient(180deg,#fff7e6,#f7ecd9)' }}>
         <div className="rt" style={{ marginBottom: 0, lineHeight: 1.45 }}>
-          Магнат это уютная настолка про недвижимость в духе «Монополии». Скупай улицы, собирай
-          цветные группы в <b style={{ color: 'var(--accent-deep)' }}>монополии</b> и застраивай их домами,
-          чтобы соперники платили тебе по-крупному.
+          {t('Магнат это уютная настолка про недвижимость в духе «Монополии». Скупай улицы, собирай цветные группы в')}
+          {' '}<b style={{ color: 'var(--accent-deep)' }}>{t('монополии')}</b>{' '}
+          {t('и застраивай их домами, чтобы соперники платили тебе по-крупному.')}
         </div>
       </div>
 
@@ -31,14 +32,14 @@ export function Rules() {
         <div className="rule" key={i}>
           <div className="ic">{r.emoji}</div>
           <div>
-            <div className="rt">{r.t}</div>
-            <div className="rb">{r.b}</div>
+            <div className="rt">{t(r.t)}</div>
+            <div className="rb">{t(r.b)}</div>
           </div>
         </div>
       ))}
 
       <button className="btn gold block lg" style={{ marginTop: 8 }} onClick={() => useStore.setState({ difficultyPick: true })}>
-        Сыграть одиночную партию 🎲
+        {t('Сыграть одиночную партию 🎲')}
       </button>
     </div>
   )

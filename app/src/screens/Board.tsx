@@ -5,6 +5,7 @@ import { toView, type GameView } from '@shared/view'
 import { BOARD, tileAt, GROUPS, RAIL_RENT, UTIL_MULT, JAIL_FINE, type Tile } from '@shared/board'
 import { money } from '@shared/engine'
 import { GROUP_HEX } from '../brand'
+import { t } from '../i18n'
 
 const PIPS: Record<number, number[]> = {
   1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8],
@@ -50,18 +51,18 @@ export function Board() {
   if (!view) return null
   const me = view.players.find(p => p.id === view.youId)
   const cur = view.players[view.turn]
-  const badge = mode === 'online' && room && !room.room.quick ? `КОД ${room.room.code}` : `РАУНД ${view.round + 1}`
+  const badge = mode === 'online' && room && !room.room.quick ? `${t('КОД')} ${room.room.code}` : `${t('РАУНД')} ${view.round + 1}`
   const showBuy = view.yourTurn && view.phase === 'buy' && view.pendingTile != null
 
   return (
     <div className="game">
       <div className="game-top">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button className="round-btn on-felt" onClick={leaveGame} aria-label="Выйти">✕</button>
+          <button className="round-btn on-felt" onClick={leaveGame} aria-label={t('Выйти')}>✕</button>
           <div className="badge">{badge}</div>
         </div>
         <div className={view.yourTurn ? 'turn-tag you' : 'turn-tag'}>
-          {view.yourTurn ? '✦ Твой ход' : `Ходит ${cur?.name ?? ''}`}
+          {view.yourTurn ? t('✦ Твой ход') : `${t('Ходит')} ${cur?.name ?? ''}`}
         </div>
       </div>
 
@@ -70,8 +71,8 @@ export function Board() {
           <div key={p.id} className={`pchip${p.id === cur?.id ? ' active' : ''}${p.bankrupt ? ' out' : ''}`}>
             <span className="dot" style={{ background: p.color }}>{p.name.slice(0, 1).toUpperCase()}</span>
             <span className="pcol">
-              <span className="pn">{p.id === view.youId ? 'Ты' : p.name}{p.inJail ? ' 🔒' : ''}</span>
-              <span className="pc">{p.bankrupt ? 'банкрот' : money(p.cash)}</span>
+              <span className="pn">{p.id === view.youId ? t('Ты') : p.name}{p.inJail ? ' 🔒' : ''}</span>
+              <span className="pc">{p.bankrupt ? t('банкрот') : money(p.cash)}</span>
             </span>
           </div>
         ))}
@@ -90,7 +91,7 @@ export function Board() {
               <div style={{ fontSize: 40 }}>🎲</div>
             )}
             <div style={{ fontWeight: 900, fontSize: 14, color: '#eafff2', textAlign: 'center', textShadow: '0 1px 4px rgba(0,0,0,.5)' }}>
-              {view.status === 'finished' ? 'Партия окончена' : view.yourTurn ? (view.youInJail ? 'Ты в тюрьме' : 'Твой ход') : `${cur?.name ?? ''} ходит…`}
+              {view.status === 'finished' ? t('Партия окончена') : view.yourTurn ? (view.youInJail ? t('Ты в тюрьме') : t('Твой ход')) : `${cur?.name ?? ''} ${t('ходит…')}`}
             </div>
           </div>
         </div>
@@ -103,23 +104,23 @@ export function Board() {
             <>
               <button className="btn gold" style={{ flex: 1 }} onClick={jailPay}
                 disabled={!me || (me.getOut === 0 && me.cash < JAIL_FINE)}>
-                {me && me.getOut > 0 ? 'Выйти по карте' : `Залог ${money(JAIL_FINE)}`}
+                {me && me.getOut > 0 ? t('Выйти по карте') : `${t('Залог')} ${money(JAIL_FINE)}`}
               </button>
-              <button className="btn dark" style={{ flex: 1 }} onClick={jailRoll}>Бросок на дубль 🎲</button>
+              <button className="btn dark" style={{ flex: 1 }} onClick={jailRoll}>{t('Бросок на дубль 🎲')}</button>
             </>
           ) : view.yourTurn && !showBuy ? (
             <>
-              <button className="btn gold lg" style={{ flex: 2 }} onClick={roll} disabled={!view.canRoll}>Бросить кубики 🎲</button>
+              <button className="btn gold lg" style={{ flex: 2 }} onClick={roll} disabled={!view.canRoll}>{t('Бросить кубики 🎲')}</button>
               {view.buildableIds.length > 0 && (
-                <button className="btn dark" style={{ flex: 1 }} onClick={() => useStore.setState({ buildOpen: true })}>Строить 🏠</button>
+                <button className="btn dark" style={{ flex: 1 }} onClick={() => useStore.setState({ buildOpen: true })}>{t('Строить 🏠')}</button>
               )}
             </>
           ) : (
-            <div className="wallet" style={{ margin: '0 auto' }}><span className="lab">Твой капитал</span> {me ? money(me.cash) : '0 ₽'}</div>
+            <div className="wallet" style={{ margin: '0 auto' }}><span className="lab">{t('Твой капитал')}</span> {me ? money(me.cash) : '0 ₽'}</div>
           )}
         </div>
         {(view.yourTurn && !view.youInJail && !showBuy) && (
-          <div className="wallet"><span className="lab">Капитал</span> {me ? money(me.cash) : '0 ₽'}</div>
+          <div className="wallet"><span className="lab">{t('Капитал')}</span> {me ? money(me.cash) : '0 ₽'}</div>
         )}
       </div>
 
@@ -132,38 +133,40 @@ export function Board() {
 
 function hint(v: GameView): string {
   if (v.status === 'finished') return ''
-  if (!v.yourTurn) return `Ждём ход соперника…`
-  if (v.youInJail) return 'Заплати залог или попробуй выбросить дубль'
-  if (v.phase === 'buy') return 'Купишь недвижимость?'
-  if (v.buildableIds.length > 0) return 'Можно бросить кубики или построить дом'
-  return 'Бросай кубики и ходи по кругу'
+  if (!v.yourTurn) return t('Ждём ход соперника…')
+  if (v.youInJail) return t('Заплати залог или попробуй выбросить дубль')
+  if (v.phase === 'buy') return t('Купишь недвижимость?')
+  if (v.buildableIds.length > 0) return t('Можно бросить кубики или построить дом')
+  return t('Бросай кубики и ходи по кругу')
 }
 
 // -- листы --------------------------------------------------------------------
 function BandTitle({ tile }: { tile: Tile }) {
   const color = tile.group ? GROUP_HEX[tile.group] : '#8a5a33'
-  return <div className="prop-band" style={{ background: color }}>{tile.name}</div>
+  return <div className="prop-band" style={{ background: color }}>{t(tile.name)}</div>
 }
+
+const RAIL_LABELS = ['1 вокзал', '2 вокзала', '3 вокзала', '4 вокзала']
 
 function rentRows(tile: Tile): { label: string; value: string; hot?: boolean }[] {
   if (tile.type === 'prop' && tile.rent) {
     return [
-      { label: 'Аренда', value: money(tile.rent[0]) },
-      { label: 'Монополия (без домов)', value: money(tile.rent[0] * 2) },
-      { label: '1 дом', value: money(tile.rent[1]) },
-      { label: '2 дома', value: money(tile.rent[2]) },
-      { label: '3 дома', value: money(tile.rent[3]) },
-      { label: '4 дома', value: money(tile.rent[4]) },
-      { label: 'Отель', value: money(tile.rent[5]), hot: true },
+      { label: t('Аренда'), value: money(tile.rent[0]) },
+      { label: t('Монополия (без домов)'), value: money(tile.rent[0] * 2) },
+      { label: t('1 дом'), value: money(tile.rent[1]) },
+      { label: t('2 дома'), value: money(tile.rent[2]) },
+      { label: t('3 дома'), value: money(tile.rent[3]) },
+      { label: t('4 дома'), value: money(tile.rent[4]) },
+      { label: t('Отель'), value: money(tile.rent[5]), hot: true },
     ]
   }
   if (tile.type === 'rail') {
-    return RAIL_RENT.map((r, i) => ({ label: `${i + 1} вокзал${i > 0 ? 'а' : ''}`, value: money(r) }))
+    return RAIL_RENT.map((r, i) => ({ label: t(RAIL_LABELS[i]), value: money(r) }))
   }
   if (tile.type === 'util') {
     return [
-      { label: '1 предприятие', value: `бросок ×${UTIL_MULT[0]}` },
-      { label: '2 предприятия', value: `бросок ×${UTIL_MULT[1]}` },
+      { label: t('1 предприятие'), value: `${t('бросок')} ×${UTIL_MULT[0]}` },
+      { label: t('2 предприятия'), value: `${t('бросок')} ×${UTIL_MULT[1]}` },
     ]
   }
   return []
@@ -171,13 +174,13 @@ function rentRows(tile: Tile): { label: string; value: string; hot?: boolean }[]
 
 function specialDesc(tile: Tile): string {
   switch (tile.type) {
-    case 'go': return 'Проходя мимо, получаешь зарплату 2000 ₽.'
-    case 'jail': return 'Просто стоишь в гостях, если не попал за решётку.'
-    case 'parking': return 'Спокойная клетка. Ничего не происходит, можно выдохнуть.'
-    case 'gojail': return 'Отправляешься прямиком на нары.'
-    case 'chance': return 'Тянешь карту «Шанс»: движение, штраф или удача.'
-    case 'chest': return 'Тянешь карту «Казна»: чаще про деньги.'
-    case 'tax': return `Платишь налог ${money(tile.tax ?? 0)} в банк.`
+    case 'go': return t('Проходя мимо, получаешь зарплату 2000 ₽.')
+    case 'jail': return t('Просто стоишь в гостях, если не попал за решётку.')
+    case 'parking': return t('Спокойная клетка. Ничего не происходит, можно выдохнуть.')
+    case 'gojail': return t('Отправляешься прямиком на нары.')
+    case 'chance': return t('Тянешь карту «Шанс»: движение, штраф или удача.')
+    case 'chest': return t('Тянешь карту «Казна»: чаще про деньги.')
+    case 'tax': return `${t('Платишь налог')} ${money(tile.tax ?? 0)} ${t('в банк.')}`
     default: return ''
   }
 }
@@ -193,12 +196,12 @@ function InfoSheet({ tileId, view, onClose }: { tileId: number; view: GameView; 
       <div className="sheet" onClick={e => e.stopPropagation()}>
         <div className="sheet-grip" />
         <div className="prop-card">
-          {buyable ? <BandTitle tile={tile} /> : <div className="prop-band" style={{ background: '#8a5a33' }}>{tile.name}</div>}
+          {buyable ? <BandTitle tile={tile} /> : <div className="prop-band" style={{ background: '#8a5a33' }}>{t(tile.name)}</div>}
           <div className="prop-body">
             {buyable ? (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <span style={{ fontWeight: 800, color: 'var(--ink-soft)' }}>Цена</span>
+                  <span style={{ fontWeight: 800, color: 'var(--ink-soft)' }}>{t('Цена')}</span>
                   <span className="big-price">{money(tile.price ?? 0)}</span>
                 </div>
                 <table className="rent-table">
@@ -210,14 +213,14 @@ function InfoSheet({ tileId, view, onClose }: { tileId: number; view: GameView; 
                 </table>
                 {tile.type === 'prop' && (
                   <div style={{ marginTop: 8, fontWeight: 800, color: 'var(--ink-soft)', fontSize: 13 }}>
-                    Дом: {money(tile.houseCost ?? 0)} · строить можно на полной группе
+                    {t('Дом:')} {money(tile.houseCost ?? 0)} · {t('строить можно на полной группе')}
                   </div>
                 )}
                 <div className="owner-line">
                   {ownerP ? (
-                    <><span className="odot" style={{ background: ownerP.color }} /> Владелец: {ownerP.id === view.youId ? 'ты' : ownerP.name}{view.mortgaged[tileId] ? ' · в залоге' : ''}</>
+                    <><span className="odot" style={{ background: ownerP.color }} /> {t('Владелец:')} {ownerP.id === view.youId ? t('ты') : ownerP.name}{view.mortgaged[tileId] ? ` · ${t('в залоге')}` : ''}</>
                   ) : (
-                    <>Пока ничей</>
+                    <>{t('Пока ничей')}</>
                   )}
                 </div>
               </>
@@ -226,7 +229,7 @@ function InfoSheet({ tileId, view, onClose }: { tileId: number; view: GameView; 
             )}
           </div>
         </div>
-        <button className="btn cream block" style={{ marginTop: 14 }} onClick={onClose}>Закрыть</button>
+        <button className="btn cream block" style={{ marginTop: 14 }} onClick={onClose}>{t('Закрыть')}</button>
       </div>
     </div>
   )
@@ -239,12 +242,12 @@ function BuySheet({ view, onBuy, onDecline }: { view: GameView; onBuy: () => voi
     <div className="scrim">
       <div className="sheet">
         <div className="sheet-grip" />
-        <h2 style={{ textAlign: 'center', marginBottom: 12 }}>Свободная недвижимость</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: 12 }}>{t('Свободная недвижимость')}</h2>
         <div className="prop-card">
           <BandTitle tile={tile} />
           <div className="prop-body">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <span style={{ fontWeight: 800, color: 'var(--ink-soft)' }}>Цена</span>
+              <span style={{ fontWeight: 800, color: 'var(--ink-soft)' }}>{t('Цена')}</span>
               <span className="big-price">{money(tile.price ?? 0)}</span>
             </div>
             <table className="rent-table">
@@ -257,9 +260,9 @@ function BuySheet({ view, onBuy, onDecline }: { view: GameView; onBuy: () => voi
           </div>
         </div>
         <button className="btn gold block lg" style={{ marginTop: 14 }} onClick={onBuy} disabled={!view.canBuyPending}>
-          {view.canBuyPending ? `Купить за ${money(tile.price ?? 0)}` : 'Не хватает денег'}
+          {view.canBuyPending ? `${t('Купить за')} ${money(tile.price ?? 0)}` : t('Не хватает денег')}
         </button>
-        <button className="btn ghost block" style={{ marginTop: 10 }} onClick={onDecline}>Пропустить</button>
+        <button className="btn ghost block" style={{ marginTop: 10 }} onClick={onDecline}>{t('Пропустить')}</button>
       </div>
     </div>
   )
@@ -271,28 +274,28 @@ function BuildSheet({ view, onBuild, onClose }: { view: GameView; onBuild: (id: 
     <div className="scrim" onClick={onClose}>
       <div className="sheet" onClick={e => e.stopPropagation()}>
         <div className="sheet-grip" />
-        <h2 style={{ textAlign: 'center', marginBottom: 4 }}>Построить дом 🏠</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: 4 }}>{t('Построить дом 🏠')}</h2>
         <p style={{ textAlign: 'center', color: 'var(--ink-soft)', fontWeight: 800, marginTop: 0, marginBottom: 14, fontSize: 14 }}>
-          Дома поднимают аренду. Пятый дом это отель.
+          {t('Дома поднимают аренду. Пятый дом это отель.')}
         </p>
         {items.length === 0 ? (
-          <p className="act-hint" style={{ color: 'var(--ink-soft)' }}>Пока строить негде.</p>
+          <p className="act-hint" style={{ color: 'var(--ink-soft)' }}>{t('Пока строить негде.')}</p>
         ) : (
-          items.map(t => {
-            const h = view.houses[t.id] ?? 0
+          items.map(item => {
+            const h = view.houses[item.id] ?? 0
             return (
-              <button key={t.id} className="build-item" onClick={() => onBuild(t.id)}>
-                <span className="bband" style={{ background: t.group ? GROUP_HEX[t.group] : '#8a5a33' }} />
+              <button key={item.id} className="build-item" onClick={() => onBuild(item.id)}>
+                <span className="bband" style={{ background: item.group ? GROUP_HEX[item.group] : '#8a5a33' }} />
                 <span className="bt">
-                  <span className="bn">{t.name}</span>
-                  <span className="bh">{h >= 4 ? 'станет отелем' : `сейчас ${h} ${h === 1 ? 'дом' : 'дома'}`} · {GROUPS[t.group!].label}</span>
+                  <span className="bn">{t(item.name)}</span>
+                  <span className="bh">{h >= 4 ? t('станет отелем') : `${t('сейчас')} ${h} ${t(h === 1 ? 'дом' : 'дома')}`} · {t(GROUPS[item.group!].label)}</span>
                 </span>
-                <span className="bc">{money(t.houseCost ?? 0)}</span>
+                <span className="bc">{money(item.houseCost ?? 0)}</span>
               </button>
             )
           })
         )}
-        <button className="btn cream block" style={{ marginTop: 8 }} onClick={onClose}>Закрыть</button>
+        <button className="btn cream block" style={{ marginTop: 8 }} onClick={onClose}>{t('Закрыть')}</button>
       </div>
     </div>
   )

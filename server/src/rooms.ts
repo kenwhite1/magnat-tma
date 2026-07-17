@@ -4,8 +4,8 @@
 // «играть с друзьями».
 //
 // Две разновидности комнат:
-//   * комнаты с друзьями — по коду, пустые места добиваются (видимыми) ботами
-//   * быстрые комнаты     — публичный подбор; автостарт и добивка ботами,
+//   * комнаты с друзьями - по коду, пустые места добиваются (видимыми) ботами
+//   * быстрые комнаты     - публичный подбор; автостарт и добивка ботами,
 //                           которых клиент видит как обычных игроков
 
 import { createGame, applyAction, currentPlayer, finalScore, type GameState, type Action } from '../../shared/engine'
@@ -19,7 +19,7 @@ import { reportMatch } from './gg'
 import type { MatchMode } from '../../shared/gg'
 
 // «Монополист»: победитель держит полный цветной набор, застроенный отелями.
-// Вокзалы и предприятия не считаем — на них не строят (houseCost 0).
+// Вокзалы и предприятия не считаем - на них не строят (houseCost 0).
 function hasHotelMonopoly(g: GameState, playerId: string): boolean {
   return (Object.keys(GROUPS) as Group[]).some(
     grp =>
@@ -83,8 +83,8 @@ function pickQuickDiff(): Difficulty {
   return r < 0.25 ? 'easy' : r < 0.8 ? 'medium' : 'hard'
 }
 
-// Добить стол ботами. В быстрых комнатах — человеческие имена и разная
-// сложность, чтобы соперники читались как живые; в дружеских — обычные боты.
+// Добить стол ботами. В быстрых комнатах - человеческие имена и разная
+// сложность, чтобы соперники читались как живые; в дружеских - обычные боты.
 function fillBots(room: Room): void {
   const used = new Set(room.seats.map(s => s.name))
   const pool = room.quick ? HUMAN_NAMES : BOT_NAMES
@@ -264,7 +264,7 @@ function finishIfDone(room: Room): void {
   const score = finalScore(room.game)
   room.roundOver = { winnerName: winner?.name ?? '-', score }
   const g = room.game
-  // Живые — только настоящие люди: в быстрой комнате боты замаскированы под них
+  // Живые - только настоящие люди: в быстрой комнате боты замаскированы под них
   // для UI, но хабу нужно честное число (соц./ранговые ачивки, анти-чит).
   const humans = room.seats.filter(h => !h.isBot && h.tgId != null)
   const mode: MatchMode = room.quick ? 'multi' : 'friends'
@@ -273,7 +273,7 @@ function finishIfDone(room: Room): void {
     const won = g.winnerId === s.id
     recordResult(s.tgId, 'online', won, won ? score : 0)
     // Рапорт хабу: room.scored выше гарантирует один раз на партию, а ключ
-    // идемпотентности (код + время создания комнаты) — что повтор не доплатит.
+    // идемпотентности (код + время создания комнаты) - что повтор не доплатит.
     // «Без потерь» не шлём: фигур, которые можно потерять, в «Магнате» нет.
     const stats: Record<string, boolean> = {}
     if (won && g.turnCount < 25) stats.fast = true

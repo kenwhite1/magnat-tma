@@ -18,7 +18,7 @@ export interface DeckCard {
   effect: CardEffect
 }
 
-// «Шанс» — резкие события про движение и удачу.
+// «Шанс» - резкие события про движение и удачу.
 export const CHANCE: DeckCard[] = [
   { id: 'c1', text: 'Беспроигрышная лотерея! Банк выплачивает 2000.', effect: { kind: 'money', amount: 2000 } },
   { id: 'c2', text: 'Проезд до Старта. Получите зарплату.', effect: { kind: 'move', to: 0 } },
@@ -30,7 +30,7 @@ export const CHANCE: DeckCard[] = [
   { id: 'c8', text: 'Дивиденды по акциям: 1000.', effect: { kind: 'money', amount: 1000 } },
 ]
 
-// «Казна» — про деньги и людей вокруг.
+// «Казна» - про деньги и людей вокруг.
 export const CHEST: DeckCard[] = [
   { id: 'k1', text: 'Возврат налогов. Банк выплачивает 1500.', effect: { kind: 'money', amount: 1500 } },
   { id: 'k2', text: 'День рождения! Каждый игрок дарит вам 300.', effect: { kind: 'collect', amount: 300 } },

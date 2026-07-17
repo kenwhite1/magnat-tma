@@ -1,7 +1,9 @@
 // Знак «Магнат»: золотая монета с цилиндром магната и мягким блеском.
+import { t } from '../i18n'
+
 export function Logo({ size = 132 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 160 160" className="brand-logo" aria-label="Магнат">
+    <svg width={size} height={size} viewBox="0 0 160 160" className="brand-logo" aria-label={t('Магнат')}>
       <defs>
         <radialGradient id="coin" cx="42%" cy="34%" r="72%">
           <stop offset="0%" stopColor="#fff0c0" />

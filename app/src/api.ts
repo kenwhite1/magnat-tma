@@ -31,7 +31,8 @@ export const api = {
   },
   profile: () => req<{ profile: Profile }>('/profile'),
   leaderboard: () => req<{ top: LeaderRow[] }>('/leaderboard'),
-  soloResult: (won: boolean, score: number) => req<{ profile: Profile }>('/solo/result', { won, score }),
+  soloResult: (won: boolean, score: number, runId: string) =>
+    req<{ profile: Profile }>('/solo/result', { won, score, runId }),
   roomCreate: () => req<RoomStateDto>('/room/create', {}),
   roomQuick: () => req<RoomStateDto>('/room/quick', {}),
   roomJoin: (code: string) => req<RoomStateDto>('/room/join', { code }),

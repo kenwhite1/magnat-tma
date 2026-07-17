@@ -7,16 +7,18 @@ import { Rules } from './screens/Rules'
 import { Leaderboard } from './screens/Leaderboard'
 import { Logo } from './screens/Logo'
 import { APP_NAME } from './brand'
+import { t, useLang } from './i18n'
 import type { Difficulty } from '@shared/bots'
 
 const CONFETTI = ['#e05a4d', '#3d8be0', '#54b15a', '#f0b429', '#f8d77e']
-const DIFFS: { d: Difficulty; t: string; s: string; emoji: string }[] = [
-  { d: 'easy', t: 'Легко', s: 'Спокойная партия', emoji: '🌱' },
-  { d: 'medium', t: 'Средне', s: 'Достойные соперники', emoji: '🎯' },
-  { d: 'hard', t: 'Сложно', s: 'Безжалостные магнаты', emoji: '🔥' },
+const DIFFS: { d: Difficulty; label: string; s: string; emoji: string }[] = [
+  { d: 'easy', label: 'Легко', s: 'Спокойная партия', emoji: '🌱' },
+  { d: 'medium', label: 'Средне', s: 'Достойные соперники', emoji: '🎯' },
+  { d: 'hard', label: 'Сложно', s: 'Безжалостные магнаты', emoji: '🔥' },
 ]
 
 export function App() {
+  useLang()
   const ready = useStore(s => s.ready)
   const screen = useStore(s => s.screen)
   const init = useStore(s => s.init)
@@ -29,8 +31,8 @@ export function App() {
         <div className="home" style={{ justifyContent: 'center' }}>
           <div className="brand" style={{ animation: 'pop-in .5s ease both' }}>
             <Logo />
-            <div className="brand-name">{APP_NAME}</div>
-            <div className="brand-tag">Раскладываем поле…</div>
+            <div className="brand-name">{t(APP_NAME)}</div>
+            <div className="brand-tag">{t('Раскладываем поле…')}</div>
           </div>
         </div>
       </div>
@@ -69,14 +71,14 @@ function Overlays() {
         <div className="scrim center" onClick={() => useStore.setState({ difficultyPick: false })}>
           <div className="sheet pop" onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: 44, textAlign: 'center' }}>🎲</div>
-            <h2 style={{ textAlign: 'center', marginTop: 2 }}>Выбери сложность</h2>
+            <h2 style={{ textAlign: 'center', marginTop: 2 }}>{t('Выбери сложность')}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginTop: 16 }}>
-              {DIFFS.map(({ d, t, s, emoji }) => (
+              {DIFFS.map(({ d, label, s, emoji }) => (
                 <button key={d} className="tile" onClick={() => startSolo(d)}>
                   <span className="tile-emoji">{emoji}</span>
                   <span className="tile-text">
-                    <span className="tile-title">{t}</span>
-                    <span className="tile-sub">{s}</span>
+                    <span className="tile-title">{t(label)}</span>
+                    <span className="tile-sub">{t(s)}</span>
                   </span>
                   <span className="tile-chev">›</span>
                 </button>
@@ -89,10 +91,10 @@ function Overlays() {
       {reveal && (
         <div className="scrim center" onClick={() => useStore.setState({ reveal: null })}>
           <div className="sheet pop reveal" onClick={e => e.stopPropagation()}>
-            <span className={`reveal-badge ${reveal.deck}`}>{reveal.deck === 'chance' ? 'Шанс' : 'Казна'}</span>
+            <span className={`reveal-badge ${reveal.deck}`}>{reveal.deck === 'chance' ? t('Шанс') : t('Казна')}</span>
             <div className="reveal-emoji">{reveal.deck === 'chance' ? '❓' : '💰'}</div>
-            <div className="reveal-text">{reveal.text}</div>
-            <button className="btn cream block" style={{ marginTop: 14 }} onClick={() => useStore.setState({ reveal: null })}>Понятно</button>
+            <div className="reveal-text">{t(reveal.text)}</div>
+            <button className="btn cream block" style={{ marginTop: 14 }} onClick={() => useStore.setState({ reveal: null })}>{t('Понятно')}</button>
           </div>
         </div>
       )}
@@ -120,17 +122,17 @@ function ResultModal() {
       )}
       <div className="sheet pop result">
         <div className="result-emoji">{won ? '🎩' : '🃏'}</div>
-        <h1>{won ? 'Ты магнат!' : `Победил ${result.winnerName}`}</h1>
-        <div className="result-sub">{won ? 'Ты разорил соперников и остался на вершине.' : 'В следующий раз повезёт больше!'}</div>
+        <h1>{won ? t('Ты магнат!') : `${t('Победил')} ${result.winnerName}`}</h1>
+        <div className="result-sub">{won ? t('Ты разорил соперников и остался на вершине.') : t('В следующий раз повезёт больше!')}</div>
         {won && (
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-            <span className="coin-chip">🪙 +{25 + Math.round(result.score / 4)} монет</span>
+            <span className="coin-chip">🪙 +{25 + Math.round(result.score / 4)} {t('монет')}</span>
           </div>
         )}
         <button className="btn gold block lg" onClick={mode === 'online' ? leaveGame : () => startSolo()}>
-          {mode === 'online' ? 'В меню' : 'Играть ещё 🎲'}
+          {mode === 'online' ? t('В меню') : t('Играть ещё 🎲')}
         </button>
-        <button className="btn ghost block" style={{ marginTop: 10 }} onClick={leaveGame}>Домой</button>
+        <button className="btn ghost block" style={{ marginTop: 10 }} onClick={leaveGame}>{t('Домой')}</button>
       </div>
     </div>
   )

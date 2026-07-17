@@ -3,6 +3,7 @@
 import { BOARD, type Tile } from '@shared/board'
 import { GROUP_HEX } from '../brand'
 import type { GameView } from '@shared/view'
+import { t } from '../i18n'
 
 const W = 1000
 const C = 150 // угол
@@ -72,7 +73,7 @@ export function BoardScene({ view, onTapTile }: { view: GameView; onTapTile: (id
       </defs>
       {/* диагональная подпись на фетре */}
       <text x="500" y="470" textAnchor="middle" fontFamily="Nunito, sans-serif" fontWeight="900"
-        fontSize="118" fill="#ffffff" opacity="0.07" transform="rotate(-45 500 500)">МАГНАТ</text>
+        fontSize="118" fill="#ffffff" opacity="0.07" transform="rotate(-45 500 500)">{t('МАГНАТ')}</text>
 
       {/* клетки */}
       {BOARD.map(tile => (
@@ -141,18 +142,18 @@ function TileCell({ tile, view, onTap }: { tile: Tile; view: GameView; onTap: (i
         <>
           <text x={cx} y={cy - 8} textAnchor="middle" fontSize="52">{special?.emoji}</text>
           <text x={cx} y={cy + 40} textAnchor="middle" fontSize="24" fontWeight="900" fill="#6f4322"
-            fontFamily="Nunito, sans-serif">{special?.label}</text>
+            fontFamily="Nunito, sans-serif">{special?.label ? t(special.label) : ''}</text>
           {tile.type === 'go' && (
             <text x={cx} y={cy + 66} textAnchor="middle" fontSize="20" fontWeight="800" fill="#4f9145"
               fontFamily="Nunito, sans-serif">+2000</text>
           )}
         </>
       ) : tile.type === 'prop' ? (
-        <TileText r={r} lines={[tile.short]} price={tile.price} />
+        <TileText r={r} lines={[t(tile.short)]} price={tile.price} />
       ) : (
         <>
           <TileEmoji r={r} emoji={special?.emoji ?? '•'} />
-          <TileText r={r} lines={[tile.type === 'tax' ? tile.short : tile.short]} price={tile.price ?? tile.tax} below />
+          <TileText r={r} lines={[t(tile.short)]} price={tile.price ?? tile.tax} below />
         </>
       )}
 
@@ -162,7 +163,7 @@ function TileCell({ tile, view, onTap }: { tile: Tile; view: GameView; onTap: (i
       {/* залог */}
       {mortgaged && (
         <text x={cx} y={cy + 4} textAnchor="middle" fontSize="20" fontWeight="900" fill="#b23b2f"
-          fontFamily="Nunito, sans-serif" opacity="0.85">залог</text>
+          fontFamily="Nunito, sans-serif" opacity="0.85">{t('залог')}</text>
       )}
     </g>
   )

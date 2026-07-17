@@ -4,9 +4,9 @@
 // пока ход не вернётся к человеку.
 //
 // Сложность меняет качество игры:
-//   easy   — покупает вяло, почти не строит, в тюрьме просто бросает кубики
-//   medium — держит подушку наличных, застраивает монополии
-//   hard   — агрессивно скупает и достраивает, бережёт кэш, метит в монополии
+//   easy   - покупает вяло, почти не строит, в тюрьме просто бросает кубики
+//   medium - держит подушку наличных, застраивает монополии
+//   hard   - агрессивно скупает и достраивает, бережёт кэш, метит в монополии
 
 import { tileAt, groupTiles, type Group } from './board'
 import {
@@ -42,7 +42,7 @@ function wantBuy(s: GameState, botId: string, tileId: number, diff: Difficulty):
   const me = s.players.find(p => p.id === botId)!
   const price = tileAt(tileId).price ?? 0
   if (me.cash < price) return false
-  // замкнуть монополию — почти всегда выгодно
+  // замкнуть монополию - почти всегда выгодно
   if (completesGroup(s, botId, tileId)) return me.cash - price >= 0
   const after = me.cash - price
   if (diff === 'hard') return after >= buffer('hard') && jitter(s, 7) > 0.08
@@ -50,7 +50,7 @@ function wantBuy(s: GameState, botId: string, tileId: number, diff: Difficulty):
   return after >= buffer('easy') && jitter(s, 3) > 0.4
 }
 
-// Выбор клетки для постройки (или null — не строить сейчас).
+// Выбор клетки для постройки (или null - не строить сейчас).
 function chooseBuild(s: GameState, botId: string, diff: Difficulty): number | null {
   const me = s.players.find(p => p.id === botId)!
   const options = buildableTiles(s, botId)

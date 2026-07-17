@@ -14,6 +14,7 @@ import type { Profile, RoomStateDto } from '@shared/types'
 import { api } from './api'
 import { haptic, setChrome } from './telegram'
 import { playSfx } from './sound'
+import { t } from './i18n'
 
 type Screen = 'home' | 'rules' | 'leaderboard' | 'lobby' | 'game'
 
@@ -66,6 +67,11 @@ interface S {
 // таймеры вне состояния, чтобы не дёргать ре-рендеры
 let botTimer: ReturnType<typeof setTimeout> | null = null
 let pollTimer: ReturnType<typeof setInterval> | null = null
+// Идентификатор соло-забега: заводится на старте партии и едет в отчёт хабу,
+// чтобы ключ идемпотентности был стабильным при повторе и разным у разных
+// партий (соло-движок крутится здесь, сервер про забег ничего не знает).
+let soloRunId = ''
+const newRunId = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`
 let rollTimer: ReturnType<typeof setTimeout> | null = null
 let revealTimer: ReturnType<typeof setTimeout> | null = null
 let flyId = 0
@@ -88,9 +94,12 @@ export const useStore = create<S>((set, get) => {
     set({ fly: { id, text, tone } })
     setTimeout(() => { if (get().fly?.id === id) set({ fly: null }) }, 1050)
   }
+  function rawToast(msg: string) {
+    set({ toast: msg })
+    setTimeout(() => { if (get().toast === msg) set({ toast: null }) }, 1700)
+  }
   function toast(text: string) {
-    set({ toast: text })
-    setTimeout(() => { if (get().toast === text) set({ toast: null }) }, 1700)
+    rawToast(t(text))
   }
   function signed(n: number): string {
     return (n >= 0 ? '+' : '-') + money(Math.abs(n))
@@ -128,11 +137,11 @@ export const useStore = create<S>((set, get) => {
           break
         case 'card':
           if (actorId === you) showReveal({ deck: e.deck, text: e.text })
-          else toast(`${e.deck === 'chance' ? 'Шанс' : 'Казна'}: ${e.text}`)
+          else rawToast(`${e.deck === 'chance' ? t('Шанс') : t('Казна')}: ${t(e.text)}`)
           playSfx('card')
           break
         case 'jail': playSfx('jail'); if (e.playerId === you) toast('Тебя отправили на нары') ; break
-        case 'bankrupt': { const p = get().solo?.players.find(x => x.id === e.playerId); if (p) toast(`${p.name} обанкротился`) ; break }
+        case 'bankrupt': { const p = get().solo?.players.find(x => x.id === e.playerId); if (p) rawToast(`${p.name} ${t('обанкротился')}`) ; break }
       }
     }
   }
@@ -163,7 +172,7 @@ export const useStore = create<S>((set, get) => {
         soloApply(botDecide(st, c.id, get().difficulty))
       }, BOT_DELAY)
     }
-    // иначе ход человека — интерфейс сам предложит нужное действие
+    // иначе ход человека - интерфейс сам предложит нужное действие
   }
 
   function finishSolo(s: GameState) {
@@ -174,7 +183,7 @@ export const useStore = create<S>((set, get) => {
     playSfx(won ? 'win' : 'lose')
     haptic(won ? 'success' : 'warn')
     set({ result: { won, score, winnerName: winner?.name ?? '-' }, reveal: null })
-    api.soloResult(won, score).then(r => set({ profile: r.profile })).catch(() => {})
+    api.soloResult(won, score, soloRunId).then(r => set({ profile: r.profile })).catch(() => {})
   }
 
   // -- ONLINE ---------------------------------------------------------------
@@ -184,7 +193,7 @@ export const useStore = create<S>((set, get) => {
     set({ room: next })
 
     // джойнер (и игрок быстрой игры) узнаёт о старте только по опросу:
-    // как только партия началась — уводим его из лобби за стол.
+    // как только партия началась - уводим его из лобби за стол.
     if (inLobby && next.room.started && next.view) { set({ screen: 'game' }); setChrome('game') }
 
     const v = next.view
@@ -286,8 +295,9 @@ export const useStore = create<S>((set, get) => {
     startSolo(difficulty) {
       clearTimers(); stopPoll()
       const youId = 'you'
+      soloRunId = newRunId()
       const players = [
-        { id: youId, name: get().profile?.name ?? 'Ты', isBot: false },
+        { id: youId, name: get().profile?.name ?? t('Ты'), isBot: false },
         { id: 'bot1', name: 'Аня', isBot: true },
         { id: 'bot2', name: 'Боря', isBot: true },
         { id: 'bot3', name: 'Витя', isBot: true },
@@ -371,7 +381,7 @@ export const useStore = create<S>((set, get) => {
         prevCash = {}
         set({ mode: 'online', room: st, screen: 'lobby', result: null, busy: false })
         startPoll(st.room.code)
-      } catch { set({ busy: false, joinError: 'Не удалось создать комнату. Проверь связь.' }) }
+      } catch { set({ busy: false, joinError: t('Не удалось создать комнату. Проверь связь.') }) }
     },
 
     async quickMatch() {
@@ -381,7 +391,7 @@ export const useStore = create<S>((set, get) => {
         prevCash = {}
         set({ mode: 'online', room: st, screen: 'lobby', result: null, busy: false })
         startPoll(st.room.code)
-      } catch { set({ busy: false, joinError: 'Не удалось подобрать игру. Проверь связь.' }) }
+      } catch { set({ busy: false, joinError: t('Не удалось подобрать игру. Проверь связь.') }) }
     },
 
     async joinRoom(code) {
@@ -393,7 +403,7 @@ export const useStore = create<S>((set, get) => {
         startPoll(st.room.code)
       } catch (e) {
         const err = (e as { data?: { error?: string } })?.data?.error
-        set({ busy: false, joinError: err === 'no_room' ? 'Нет комнаты с таким кодом.' : err === 'already_started' ? 'Игра уже началась.' : err === 'full' ? 'В комнате нет мест.' : 'Не удалось войти.' })
+        set({ busy: false, joinError: err === 'no_room' ? t('Нет комнаты с таким кодом.') : err === 'already_started' ? t('Игра уже началась.') : err === 'full' ? t('В комнате нет мест.') : t('Не удалось войти.') })
       }
     },
 
