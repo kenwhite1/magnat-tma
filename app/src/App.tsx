@@ -11,10 +11,10 @@ import { t, useLang } from './i18n'
 import type { Difficulty } from '@shared/bots'
 
 const CONFETTI = ['#e05a4d', '#3d8be0', '#54b15a', '#f0b429', '#f8d77e']
-const DIFFS: { d: Difficulty; label: string; s: string; emoji: string }[] = [
-  { d: 'easy', label: 'Легко', s: 'Спокойная партия', emoji: '🌱' },
-  { d: 'medium', label: 'Средне', s: 'Достойные соперники', emoji: '🎯' },
-  { d: 'hard', label: 'Сложно', s: 'Безжалостные магнаты', emoji: '🔥' },
+const DIFFS = (): { d: Difficulty; label: string; s: string; emoji: string }[] => [
+  { d: 'easy', label: t('Легко'), s: t('Спокойная партия'), emoji: '🌱' },
+  { d: 'medium', label: t('Средне'), s: t('Достойные соперники'), emoji: '🎯' },
+  { d: 'hard', label: t('Сложно'), s: t('Безжалостные магнаты'), emoji: '🔥' },
 ]
 
 export function App() {
@@ -73,7 +73,7 @@ function Overlays() {
             <div style={{ fontSize: 44, textAlign: 'center' }}>🎲</div>
             <h2 style={{ textAlign: 'center', marginTop: 2 }}>{t('Выбери сложность')}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginTop: 16 }}>
-              {DIFFS.map(({ d, label, s, emoji }) => (
+              {DIFFS().map(({ d, label, s, emoji }) => (
                 <button key={d} className="tile" onClick={() => startSolo(d)}>
                   <span className="tile-emoji">{emoji}</span>
                   <span className="tile-text">

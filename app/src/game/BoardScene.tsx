@@ -23,12 +23,12 @@ function rectFor(i: number): Rect {
 }
 
 const SPECIAL: Record<string, { emoji: string; label: string }> = {
-  go: { emoji: '🏁', label: 'СТАРТ' },
-  jail: { emoji: '🔒', label: 'Тюрьма' },
-  parking: { emoji: '☕', label: 'Отдых' },
-  gojail: { emoji: '👮', label: 'На нары' },
-  chance: { emoji: '❓', label: 'Шанс' },
-  chest: { emoji: '💰', label: 'Казна' },
+  go: { emoji: '🏁', label: t('СТАРТ') },
+  jail: { emoji: '🔒', label: t('Тюрьма') },
+  parking: { emoji: '☕', label: t('Отдых') },
+  gojail: { emoji: '👮', label: t('На нары') },
+  chance: { emoji: '❓', label: t('Шанс') },
+  chest: { emoji: '💰', label: t('Казна') },
   tax: { emoji: '💸', label: '' },
 }
 

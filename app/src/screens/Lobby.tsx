@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useStore } from '../store'
+import { HubInvite } from './HubInvite'
 import { shareLink, haptic } from '../telegram'
 import { APP_NAME } from '../brand'
 import { t } from '../i18n'
@@ -80,7 +81,7 @@ export function Lobby() {
   const share = () => {
     haptic('tap')
     const link = `https://t.me/${botUsername}?startapp=room_${room.room.code}`
-    shareLink(link, `${t('Заходи ко мне в')} ${APP_NAME}! ${t('Код комнаты')} ${room.room.code} 🎲`)
+    shareLink(link, `${t('Заходи ко мне в')} ${t(APP_NAME)}! ${t('Код комнаты')} ${room.room.code} 🎲`)
   }
 
   return (
@@ -95,6 +96,7 @@ export function Lobby() {
         <div className="code-big">{room.room.code}</div>
         <button className="btn accent block" style={{ marginTop: 8 }} onClick={share}>{t('Позвать друзей ↗')}</button>
       </div>
+      <HubInvite />
 
       <div className="seatlist">
         {room.room.players.map(p => (

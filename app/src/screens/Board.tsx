@@ -146,7 +146,7 @@ function BandTitle({ tile }: { tile: Tile }) {
   return <div className="prop-band" style={{ background: color }}>{t(tile.name)}</div>
 }
 
-const RAIL_LABELS = ['1 вокзал', '2 вокзала', '3 вокзала', '4 вокзала']
+const RAIL_LABELS = () => ['1 вокзал', t('2 вокзала'), t('3 вокзала'), t('4 вокзала')]
 
 function rentRows(tile: Tile): { label: string; value: string; hot?: boolean }[] {
   if (tile.type === 'prop' && tile.rent) {
@@ -161,7 +161,7 @@ function rentRows(tile: Tile): { label: string; value: string; hot?: boolean }[]
     ]
   }
   if (tile.type === 'rail') {
-    return RAIL_RENT.map((r, i) => ({ label: t(RAIL_LABELS[i]), value: money(r) }))
+    return RAIL_RENT.map((r, i) => ({ label: t(RAIL_LABELS()[i]), value: money(r) }))
   }
   if (tile.type === 'util') {
     return [
@@ -288,7 +288,7 @@ function BuildSheet({ view, onBuild, onClose }: { view: GameView; onBuild: (id: 
                 <span className="bband" style={{ background: item.group ? GROUP_HEX[item.group] : '#8a5a33' }} />
                 <span className="bt">
                   <span className="bn">{t(item.name)}</span>
-                  <span className="bh">{h >= 4 ? t('станет отелем') : `${t('сейчас')} ${h} ${t(h === 1 ? 'дом' : 'дома')}`} · {t(GROUPS[item.group!].label)}</span>
+                  <span className="bh">{h >= 4 ? t('станет отелем') : `${t('сейчас')} ${h} ${t(h === 1 ? 'дом' : t('дома'))}`} · {t(GROUPS[item.group!].label)}</span>
                 </span>
                 <span className="bc">{money(item.houseCost ?? 0)}</span>
               </button>

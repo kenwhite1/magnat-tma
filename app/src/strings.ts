@@ -1,8 +1,16 @@
 // English translations keyed by the exact Russian source string.
 // Russian stays the default; t(ru) returns EN[ru] when the language is English.
 export const EN: Record<string, string> = {
+  'Аня': 'Anna',
+  'Боря': 'Bobby',
+  'Витя': 'Vince',
+  // Приглашение друзей из хаба (screens/HubInvite.tsx)
+  'Позвать друзей из хаба': 'Invite friends from the hub',
+  'Позвать': 'Invite',
+  'Позвали': 'Invited',
+  'Позвать всех': 'Invite everyone',
   // -- Brand / app ----------------------------------------------------------
-  'Магнат': 'Magnate',
+  'Магнат': 'Rentlord',
   'МАГНАТ': 'MAGNATE',
   'Раскладываем поле…': 'Setting up the board…',
 
