@@ -1,3 +1,4 @@
+import { displayText } from "../i18n"
 import { useMemo, useEffect } from 'react'
 import { useStore } from '../store'
 import { BoardScene } from '../game/BoardScene'
@@ -146,7 +147,7 @@ function BandTitle({ tile }: { tile: Tile }) {
   return <div className="prop-band" style={{ background: color }}>{t(tile.name)}</div>
 }
 
-const RAIL_LABELS = () => ['1 вокзал', t('2 вокзала'), t('3 вокзала'), t('4 вокзала')]
+const RAIL_LABELS = () => [t("1 вокзал"), t('2 вокзала'), t('3 вокзала'), t('4 вокзала')]
 
 function rentRows(tile: Tile): { label: string; value: string; hot?: boolean }[] {
   if (tile.type === 'prop' && tile.rent) {
@@ -207,7 +208,7 @@ function InfoSheet({ tileId, view, onClose }: { tileId: number; view: GameView; 
                 <table className="rent-table">
                   <tbody>
                     {rows.map((r, i) => (
-                      <tr key={i} className={r.hot ? 'hot' : ''}><td>{r.label}</td><td>{r.value}</td></tr>
+                      <tr key={i} className={r.hot ? 'hot' : ''}><td>{displayText(r.label)}</td><td>{r.value}</td></tr>
                     ))}
                   </tbody>
                 </table>
@@ -253,7 +254,7 @@ function BuySheet({ view, onBuy, onDecline }: { view: GameView; onBuy: () => voi
             <table className="rent-table">
               <tbody>
                 {rows.slice(0, tile.type === 'prop' ? 3 : rows.length).map((r, i) => (
-                  <tr key={i}><td>{r.label}</td><td>{r.value}</td></tr>
+                  <tr key={i}><td>{displayText(r.label)}</td><td>{r.value}</td></tr>
                 ))}
               </tbody>
             </table>
@@ -288,7 +289,7 @@ function BuildSheet({ view, onBuild, onClose }: { view: GameView; onBuild: (id: 
                 <span className="bband" style={{ background: item.group ? GROUP_HEX[item.group] : '#8a5a33' }} />
                 <span className="bt">
                   <span className="bn">{t(item.name)}</span>
-                  <span className="bh">{h >= 4 ? t('станет отелем') : `${t('сейчас')} ${h} ${t(h === 1 ? 'дом' : t('дома'))}`} · {t(GROUPS[item.group!].label)}</span>
+                  <span className="bh">{h >= 4 ? t('станет отелем') : `${t('сейчас')} ${h} ${t(h === 1 ? t("дом") : t('дома'))}`} · {t(GROUPS[item.group!].label)}</span>
                 </span>
                 <span className="bc">{money(item.houseCost ?? 0)}</span>
               </button>
