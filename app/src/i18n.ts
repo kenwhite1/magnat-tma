@@ -1,4 +1,4 @@
-import { resolveGameLanguage } from './gameLocale'
+import { resolveGameLanguage, installGameLanguagePicker, createGameTextTranslator } from './gameLocale'
 import { useSyncExternalStore } from 'react'
 import { EN } from './strings'
 export type Lang = 'ru' | 'en'
@@ -6,7 +6,7 @@ const KEY = 'gg_lang'
 let currentLang: Lang = 'ru'
 const listeners = new Set<() => void>()
 export function detectLang(): Lang { return resolveGameLanguage(KEY) }
-export function initLang(): void { currentLang = detectLang() }
+export function initLang(): void { currentLang = detectLang(); document.documentElement.lang = currentLang; installGameLanguagePicker({ get: getLang, set: setLang, subscribe: onLangChange }) }
 export function getLang(): Lang { return currentLang }
 export function setLang(l: Lang): void {
   if (l === currentLang) return
@@ -16,7 +16,7 @@ export function setLang(l: Lang): void {
 }
 export function toggleLang(): Lang { const n: Lang = currentLang === 'ru' ? 'en' : 'ru'; setLang(n); return n }
 export function onLangChange(fn: () => void): () => void { listeners.add(fn); return () => { listeners.delete(fn) } }
-export function t(ru: string): string { return currentLang === 'ru' ? ru : (EN[ru] ?? ru) }
+export function t(ru: string): string { return translateAuthoredText(ru, currentLang) }
 export function numLocale(): string { return currentLang === 'ru' ? 'ru' : 'en-US' }
 export function useLang(): Lang {
   return useSyncExternalStore(cb => onLangChange(cb), () => currentLang, () => currentLang)
@@ -24,3 +24,5 @@ export function useLang(): Lang {
 
 /** Translate authored labels at render time, keeping live language changes complete. */
 export function displayText<T>(value: T): T { return (typeof value === "string" ? t(value) : value) as T }
+
+const translateAuthoredText = createGameTextTranslator(EN)

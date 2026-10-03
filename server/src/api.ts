@@ -1,3 +1,4 @@
+import { setDisplayLanguage } from './gg'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { validateInitData, issueToken, verifyToken } from './auth'
@@ -21,6 +22,7 @@ api.post('/auth', async c => {
   getOrCreateUser(v.user.id, name, v.user.username)
   // Открыли из хаба GG - в startapp приехал токен запуска, он нужен в конце партии.
   storeLaunchToken(v.user.id, v.startParam)
+  setDisplayLanguage(v.user.id, c.req.header('x-game-language'))
   const token = await issueToken(v.user.id)
   const profile = await withHubCoins(v.user.id, getProfile(v.user.id))
   return c.json({ token, profile, startParam: v.startParam, botUsername: BOT_USERNAME })
@@ -33,6 +35,7 @@ api.use('/*', async (c, next) => {
   const uid = token ? await verifyToken(token) : null
   if (!uid) return c.json({ error: 'unauthorized' }, 401)
   c.set('uid', uid)
+  setDisplayLanguage(uid, c.req.header('x-game-language'))
   return next()
 })
 
