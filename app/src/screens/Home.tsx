@@ -12,19 +12,12 @@ export function Home() {
 
   const lang = getLang()
   const langBtn = (l: 'ru' | 'en', txt: string) => (
-    <button
-      onClick={() => setLang(l)}
-      style={{
-        border: 'none', cursor: 'pointer', fontWeight: 900, fontSize: 12,
-        padding: '5px 11px', borderRadius: 999,
-        background: lang === l ? 'var(--brown-deep, #6f4322)' : 'rgba(0,0,0,.08)',
-        color: lang === l ? '#fff' : 'var(--ink-soft, #6f4322)',
-      }}
-    >{txt}</button>
+    null
   )
 
   return (
     <div className="home rise">
+      <div data-gg-pregame />
       <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 6, zIndex: 5 }}>
         {langBtn('ru', 'RU')}
         {langBtn('en', 'EN')}
