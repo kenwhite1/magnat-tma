@@ -1,5 +1,11 @@
 # Магнат 🎩🎲
 
+> **⛔ Retired — do not deploy.** This is the old 2D Rentlord game. Its Railway service
+> (`magnat-production`) now runs **3D Monopoly** from `../magnat-3d`, which `@monopolyrubot`
+> and the hub's Monopoly tile open. Deploying this folder there would replace the 3D game,
+> so `npm run build`, `npm start` and the Railway build all fail on purpose
+> (`scripts/retired.mjs`). Deploy `magnat-3d` instead.
+
 Уютная настолка про недвижимость в духе «Монополии» (без копирайтов), сделанная как Telegram Mini App. Русский интерфейс, тёплый премиальный дизайн, игра с ботами и с друзьями по коду.
 
 Скупай улицы, вокзалы и предприятия, собирай цветные группы в монополии, застраивай их домами и отелями и разоряй соперников. Последний платёжеспособный магнат за столом побеждает.

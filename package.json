@@ -6,8 +6,8 @@
   "scripts": {
     "dev:server": "npm run dev -w server",
     "dev:app": "npm run dev -w app",
-    "build": "npm run build -w app",
-    "start": "npm run start -w server",
+    "build": "node scripts/retired.mjs",
+    "start": "node scripts/retired.mjs",
     "test": "node --import tsx --test shared/*.test.ts",
     "typecheck": "npm run typecheck -w server && npm run typecheck -w app"
   },
